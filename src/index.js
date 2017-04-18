@@ -1,8 +1,8 @@
-import $ from 'jquery';
-import './style.scss';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-let num = 0;
-setInterval(() => {
-  $('#main').html(`You've been on ths page for ${num} seconds`);
-  num += 1;
-}, 1000);
+const App = () => {
+  return <div className="test">All the React are belong to us!</div>;
+};
+
+ReactDOM.render(<App />, document.getElementById('main'));
