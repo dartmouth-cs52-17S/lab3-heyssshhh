@@ -13,7 +13,6 @@ class App extends Component {
     this.state = {
       notes: Immutable.Map(),
       undo: Immutable.Stack(),
-      id: 0,
       topZ: 0,
     };
 
@@ -36,13 +35,10 @@ class App extends Component {
       text: '',
       x: 200,
       y: 200,
-      zIndex: 0,
+      zIndex: this.state.topZ + 1,
     };
     this.setState({
-      id: this.state.id + 1,
-      notes: this.state.notes.set(this.state.id, note),
       undo: this.state.undo.unshift(this.state.notes),
-
     });
     firebasedb.addNote(note);
   }
@@ -56,7 +52,6 @@ class App extends Component {
 
   delete(id) {
     this.setState({
-      notes: this.state.notes.delete(id),
       undo: this.state.undo.unshift(this.state.notes),
     });
     firebasedb.removeNote(id);
@@ -64,7 +59,6 @@ class App extends Component {
 
   update(id, field) {
     this.setState({
-      notes: this.state.notes.update(id, (n) => { return Object.assign({}, n, field); }),
       undo: this.state.undo.unshift(this.state.notes),
     });
     firebasedb.updateNote(id, field);

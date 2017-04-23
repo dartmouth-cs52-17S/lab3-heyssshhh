@@ -14,11 +14,13 @@ class Notes extends Component {
     this.onDrag = this.onDrag.bind(this);
     this.delete = this.delete.bind(this);
     this.update = this.update.bind(this);
+    this.updateTitle = this.updateTitle.bind(this);
     this.editOrSave = this.editOrSave.bind(this);
     this.noteStyle = this.noteStyle.bind(this);
     this.toggle = this.toggle.bind(this);
     this.renderThis = this.renderThis.bind(this);
     this.enter = this.enter.bind(this);
+    this.titleStyle = this.titleStyle.bind(this);
   }
 
 
@@ -33,6 +35,10 @@ class Notes extends Component {
 
   update(event) {
     this.props.updateNote(this.props.id, { text: event.target.value });
+  }
+
+  updateTitle(event) {
+    this.props.updateNote(this.props.id, { title: event.target.value });
   }
 
   toggle() {
@@ -53,6 +59,11 @@ class Notes extends Component {
     return (<div className="displayText" dangerouslySetInnerHTML={{ __html: marked(this.props.note.text || '') }} />);
   }
 
+  titleStyle() {
+    if (this.state.chosen) return (<textarea className="editTitle" value={this.props.note.title} onChange={this.updateTitle} onKeyPress={this.enter} />);
+    return (<span>{this.props.note.title}</span>);
+  }
+
   renderThis() {
     return (
       <Draggable
@@ -68,7 +79,7 @@ class Notes extends Component {
         <div className="note" style={{ zIndex: this.props.note.zIndex }}>
           <div className="note_top">
             <div className="left">
-              <span>{this.props.note.title}</span>
+              {this.titleStyle()}
               <i onClick={this.delete} className="fa fa-trash-o" />
               {this.editOrSave()}
             </div>
