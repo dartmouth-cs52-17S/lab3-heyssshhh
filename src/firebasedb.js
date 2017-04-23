@@ -22,6 +22,16 @@ export function fetchNotes(callback) {
   });
 }
 
+export function fetchZ(callback) {
+  firebase.database().ref('topZ').on('value', (snapshot) => {
+    callback(snapshot.val());
+  });
+}
+
+export function updateZ(topZ) {
+  firebase.database().ref('topZ').set({ topZ });
+}
+
 export function addNote(note) {
   firebase.database().ref().child('notes/').push(note);
 }

@@ -21,11 +21,16 @@ class Notes extends Component {
     this.renderThis = this.renderThis.bind(this);
     this.enter = this.enter.bind(this);
     this.titleStyle = this.titleStyle.bind(this);
+    this.onStartDrag = this.onStartDrag.bind(this);
   }
 
 
   onDrag(event, ui) {
     this.props.updateNote(this.props.id, { x: ui.x, y: ui.y });
+  }
+
+  onStartDrag() {
+    if (document.getElementById(this.props.id) !== null) { document.getElementById(this.props.id).style.zIndex = this.props.z; }
     this.props.bringForward(this.props.id);
   }
 
@@ -68,7 +73,7 @@ class Notes extends Component {
     return (
       <Draggable
         handle=".note-mover"
-        grid={[25, 25]}
+        grid={[60, 60]}
         defaultPosition={{ x: 20, y: 20 }}
         position={{ x: this.props.note.x, y: this.props.note.y }}
         onStart={this.onStartDrag}

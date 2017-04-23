@@ -27,6 +27,11 @@ class App extends Component {
     firebasedb.fetchNotes((notes) => {
       this.setState({ notes: Immutable.Map(notes) });
     });
+    firebasedb.fetchZ(z =>
+      this.setState({
+        topZ: z.topZ,
+      }),
+    );
   }
 
   add(newtitle) {
@@ -35,18 +40,17 @@ class App extends Component {
       text: '',
       x: 200,
       y: 200,
-      zIndex: this.state.topZ + 1,
+      zIndex: this.state.topZ,
     };
     this.setState({
       undo: this.state.undo.unshift(this.state.notes),
     });
+    firebasedb.updateZ(this.state.topZ + 1);
     firebasedb.addNote(note);
   }
 
   bringForward(id) {
-    this.setState({
-      topZ: this.state.topZ + 1,
-    });
+    firebasedb.updateZ(this.state.topZ + 1);
     this.update(id, { zIndex: this.state.topZ });
   }
 
@@ -86,6 +90,7 @@ class App extends Component {
               updateNote={this.update}
               deleteNote={this.delete}
               bringForward={this.bringForward}
+              z={this.topZ}
             />
           );
         })}
