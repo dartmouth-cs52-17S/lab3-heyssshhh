@@ -9695,6 +9695,11 @@ var App = function (_Component) {
       firebasedb.fetchNotes(function (notes) {
         _this2.setState({ notes: _immutable2.default.Map(notes) });
       });
+      firebasedb.fetchZ(function (z) {
+        return _this2.setState({
+          topZ: z.topZ
+        });
+      });
     }
   }, {
     key: 'add',
@@ -9704,19 +9709,18 @@ var App = function (_Component) {
         text: '',
         x: 200,
         y: 200,
-        zIndex: this.state.topZ + 1
+        zIndex: this.state.topZ
       };
       this.setState({
         undo: this.state.undo.unshift(this.state.notes)
       });
+      firebasedb.updateZ(this.state.topZ + 1);
       firebasedb.addNote(note);
     }
   }, {
     key: 'bringForward',
     value: function bringForward(id) {
-      this.setState({
-        topZ: this.state.topZ + 1
-      });
+      firebasedb.updateZ(this.state.topZ + 1);
       this.update(id, { zIndex: this.state.topZ });
     }
   }, {
@@ -9767,7 +9771,8 @@ var App = function (_Component) {
             key: id,
             updateNote: _this3.update,
             deleteNote: _this3.delete,
-            bringForward: _this3.bringForward
+            bringForward: _this3.bringForward,
+            z: _this3.topZ
           });
         })
       );
@@ -9874,6 +9879,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.fetchNotes = fetchNotes;
+exports.fetchZ = fetchZ;
+exports.updateZ = updateZ;
 exports.addNote = addNote;
 exports.removeNote = removeNote;
 exports.updateNote = updateNote;
@@ -9904,6 +9911,16 @@ function fetchNotes(callback) {
   _firebase2.default.database().ref('notes').on('value', function (snapshot) {
     callback(snapshot.val());
   });
+}
+
+function fetchZ(callback) {
+  _firebase2.default.database().ref('topZ').on('value', function (snapshot) {
+    callback(snapshot.val());
+  });
+}
+
+function updateZ(topZ) {
+  _firebase2.default.database().ref('topZ').set({ topZ: topZ });
 }
 
 function addNote(note) {
@@ -9977,6 +9994,7 @@ var Notes = function (_Component) {
     _this.renderThis = _this.renderThis.bind(_this);
     _this.enter = _this.enter.bind(_this);
     _this.titleStyle = _this.titleStyle.bind(_this);
+    _this.onStartDrag = _this.onStartDrag.bind(_this);
     return _this;
   }
 
@@ -9984,6 +10002,13 @@ var Notes = function (_Component) {
     key: 'onDrag',
     value: function onDrag(event, ui) {
       this.props.updateNote(this.props.id, { x: ui.x, y: ui.y });
+    }
+  }, {
+    key: 'onStartDrag',
+    value: function onStartDrag() {
+      if (document.getElementById(this.props.id) !== null) {
+        document.getElementById(this.props.id).style.zIndex = this.props.z;
+      }
       this.props.bringForward(this.props.id);
     }
   }, {
@@ -10044,7 +10069,7 @@ var Notes = function (_Component) {
         _reactDraggable2.default,
         {
           handle: '.note-mover',
-          grid: [25, 25],
+          grid: [60, 60],
           defaultPosition: { x: 20, y: 20 },
           position: { x: this.props.note.x, y: this.props.note.y },
           onStart: this.onStartDrag,
