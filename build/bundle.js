@@ -9676,7 +9676,6 @@ var App = function (_Component) {
     _this.state = {
       notes: _immutable2.default.Map(),
       undo: _immutable2.default.Stack(),
-      id: 0,
       topZ: 0
     };
 
@@ -9705,13 +9704,10 @@ var App = function (_Component) {
         text: '',
         x: 200,
         y: 200,
-        zIndex: 0
+        zIndex: this.state.topZ + 1
       };
       this.setState({
-        id: this.state.id + 1,
-        notes: this.state.notes.set(this.state.id, note),
         undo: this.state.undo.unshift(this.state.notes)
-
       });
       firebasedb.addNote(note);
     }
@@ -9727,7 +9723,6 @@ var App = function (_Component) {
     key: 'delete',
     value: function _delete(id) {
       this.setState({
-        notes: this.state.notes.delete(id),
         undo: this.state.undo.unshift(this.state.notes)
       });
       firebasedb.removeNote(id);
@@ -9736,9 +9731,6 @@ var App = function (_Component) {
     key: 'update',
     value: function update(id, field) {
       this.setState({
-        notes: this.state.notes.update(id, function (n) {
-          return Object.assign({}, n, field);
-        }),
         undo: this.state.undo.unshift(this.state.notes)
       });
       firebasedb.updateNote(id, field);
@@ -9978,11 +9970,13 @@ var Notes = function (_Component) {
     _this.onDrag = _this.onDrag.bind(_this);
     _this.delete = _this.delete.bind(_this);
     _this.update = _this.update.bind(_this);
+    _this.updateTitle = _this.updateTitle.bind(_this);
     _this.editOrSave = _this.editOrSave.bind(_this);
     _this.noteStyle = _this.noteStyle.bind(_this);
     _this.toggle = _this.toggle.bind(_this);
     _this.renderThis = _this.renderThis.bind(_this);
     _this.enter = _this.enter.bind(_this);
+    _this.titleStyle = _this.titleStyle.bind(_this);
     return _this;
   }
 
@@ -10001,6 +9995,11 @@ var Notes = function (_Component) {
     key: 'update',
     value: function update(event) {
       this.props.updateNote(this.props.id, { text: event.target.value });
+    }
+  }, {
+    key: 'updateTitle',
+    value: function updateTitle(event) {
+      this.props.updateNote(this.props.id, { title: event.target.value });
     }
   }, {
     key: 'toggle',
@@ -10025,8 +10024,18 @@ var Notes = function (_Component) {
   }, {
     key: 'noteStyle',
     value: function noteStyle() {
-      if (this.state.chosen) return _react2.default.createElement('textarea', { className: 'editText', value: this.props.note.text, onChange: this.update, onKeyPress: this.enter });
+      if (this.state.chosen) return _react2.default.createElement('textarea', { className: 'editText', value: this.props.note.text, onChange: this.update });
       return _react2.default.createElement('div', { className: 'displayText', dangerouslySetInnerHTML: { __html: (0, _marked2.default)(this.props.note.text || '') } });
+    }
+  }, {
+    key: 'titleStyle',
+    value: function titleStyle() {
+      if (this.state.chosen) return _react2.default.createElement('textarea', { className: 'editTitle', value: this.props.note.title, onChange: this.updateTitle, onKeyPress: this.enter });
+      return _react2.default.createElement(
+        'span',
+        null,
+        this.props.note.title
+      );
     }
   }, {
     key: 'renderThis',
@@ -10052,11 +10061,7 @@ var Notes = function (_Component) {
             _react2.default.createElement(
               'div',
               { className: 'left' },
-              _react2.default.createElement(
-                'span',
-                null,
-                this.props.note.title
-              ),
+              this.titleStyle(),
               _react2.default.createElement('i', { onClick: this.delete, className: 'fa fa-trash-o' }),
               this.editOrSave()
             ),
