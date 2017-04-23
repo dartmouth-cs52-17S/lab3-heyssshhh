@@ -55,7 +55,7 @@ class Notes extends Component {
   }
 
   noteStyle() {
-    if (this.state.chosen) return (<textarea className="editText" value={this.props.note.text} onChange={this.update} onKeyPress={this.enter} />);
+    if (this.state.chosen) return (<textarea className="editText" value={this.props.note.text} onChange={this.update} />);
     return (<div className="displayText" dangerouslySetInnerHTML={{ __html: marked(this.props.note.text || '') }} />);
   }
 
