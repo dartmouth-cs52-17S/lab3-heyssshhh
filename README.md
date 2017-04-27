@@ -1,5 +1,7 @@
 ## LAB 3 - REACT NOTES
 
+I made a noteboard webapp where users can update their notes real time with others. Users can add a note tot he board by clicking add, and undo changes by clicking the undo button. They can also give the note a title, and alter the title, content and size of the note. I mainly used React and Firebase.
+
 ## Extra Credit
 * Undo button
 * resizable notes
