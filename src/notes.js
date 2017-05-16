@@ -21,7 +21,7 @@ class Notes extends Component {
     this.renderThis = this.renderThis.bind(this);
     this.enter = this.enter.bind(this);
     this.titleStyle = this.titleStyle.bind(this);
-    this.onStartDrag = this.onStartDrag.bind(this);
+//    this.onStartDrag = this.onStartDrag.bind(this);
   }
 
 
@@ -29,10 +29,10 @@ class Notes extends Component {
     this.props.updateNote(this.props.id, { x: ui.x, y: ui.y });
   }
 
-  onStartDrag() {
-    if (document.getElementById(this.props.id) !== null) { document.getElementById(this.props.id).style.zIndex = this.props.z; }
-    this.props.bringForward(this.props.id);
-  }
+  // onStartDrag() {
+  //   if (document.getElementById(this.props.id) !== null) { document.getElementById(this.props.id).style.zIndex = this.props.z; }
+  //   this.props.bringForward(this.props.id);
+  // }
 
   delete() {
     this.props.deleteNote(this.props.id);
@@ -44,6 +44,7 @@ class Notes extends Component {
 
   updateTitle(event) {
     this.props.updateNote(this.props.id, { title: event.target.value });
+    console.log(`${this.props.id} and the tite is ${event.target.value}`);
   }
 
   toggle() {
